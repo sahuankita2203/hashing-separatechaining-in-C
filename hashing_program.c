@@ -1,22 +1,61 @@
 /* @author: Ankita Sahu */
 /* @disclaimer: I am a newbie in git */
-/* @description: */
+/* @input: input.txt*/
+/* @output: STD I/O */
+/* @description: Problem statement-
 
+		The task is to write a hashtable program in C using arrays and linked
+		lists. Your program must compile and run.
+
+		Input: a file "input.txt" containing a random integer in each line.
+
+		Your program should first create an empty hashtable of 8 buckets
+		i.e. an array of 8 elements.  Each bucket is a linked list of numbers
+		that belong to that bucket. Your program should then read one number
+		at a time from input.txt and insert it into the hashtable (the bucket
+		to which a number belongs is its value modulus the number of
+		buckets). As soon as the number of entries in any bucket reaches 5, it
+		should create a new hashtable with double the number of current
+		buckets and insert all the items in the current hashtable into the new
+		hashtable and start using the new hashtable.
+
+		After processing all the lines in input.txt, your program should print
+		the final hash table and exit. The output should print one line for
+		each bucket - the bucket number (starting index 0), followed by a ':',
+		followed by the elements in the bucket separated by commas.  For
+		example, the first three lines of your output might look something like
+
+*/
+
+/* @observation:
+		with a 8 GB RAM and Ubuntu 18.04, the 10^6 numbers in the range of [0,10^7) were hashable in a hashtable of size 2097152 (# of buckets) efficiently. We can try further for larger and more spread of input numbers
+*/
+/* @terms:
+		Bucket -> List
+		Item -> Number/Node
+*/
+
+/* import statements */
 #include<stdio.h>
 #include <stdlib.h>
-int flag = 0 ;
-unsigned int hashtable_size = 8;
 
+int flag = 0 ;	/* variable flag = 0 or 1, to show if any of the lists from hashtable has reached length of 5 */
+
+unsigned int hashtable_size = 8; 	/* initially set to 8 as per problem statement*/
+
+/* Structure of Node in Hashtable */
 typedef struct Node{
 	unsigned int key;
 	struct Node *next; 
 }Node;
 
+/* Structure of Hashtable */
 typedef struct _Hashtable{
 	unsigned int size;
 	Node **list;
 }Hashtable;
 
+/* function to print Hashtable */
 void printHashtable(Hashtable *ht){
 	int i =0;
 	Node *list=NULL;
@@ -29,14 +68,13 @@ void printHashtable(Hashtable *ht){
 	}
 }
 
+/* function to create a new hashtable */
 Hashtable* createHashtable(){
 	Hashtable *new_ht= malloc(sizeof(Hashtable));
 	if (new_ht==NULL){
 		printf("!!! Error: Hashtable structure can't be created !!!\n");
 		return NULL;
 	}
-	// printf("%p\n",hashtable_size);
-	// if(malloc(sizeof(Node *)*hashtable_size))	printf("yoooo");
 	if((new_ht->list=malloc(sizeof(Node *)*hashtable_size))==NULL){
 		printf("!!! Error: Hashtable can't be created !!!\n");		
 		return NULL;
@@ -50,9 +88,18 @@ Hashtable* createHashtable(){
 	return new_ht;
 }
 
+/* function to calculate the hash */
 unsigned int hash(Hashtable* ht, unsigned int key){
 	return (key%ht->size); 		//handle negative values in v2.0
 }
+
+/* function to search the number in Hashtable.
+	If it's present in hashtable, return the list.
+	Else
+		If length of the list has reached 5, update flag.
+		Else do nothing. 
+
+*/
 Node* searchKey(Hashtable* ht, int key){
 	unsigned int length_of_list = 0; 
 	unsigned int hashvalue = hash(ht, key);
@@ -67,6 +114,7 @@ Node* searchKey(Hashtable* ht, int key){
 	if(length_of_list >= 5)	flag=1;
 	return NULL;
 }
+/* function to copy the hashtables from a small-sized hashtable to larger-sized hashtable */ 
 Hashtable* copyHashtable(Hashtable *old_ht,Hashtable *new_ht){
 	int insertFlag;
 	// printf("new_ht->size : %d\n\n",new_ht->size);
@@ -86,6 +134,8 @@ Hashtable* copyHashtable(Hashtable *old_ht,Hashtable *new_ht){
 	new_ht->size = hashtable_size;
 	return new_ht;
 }
+
+/* function to free up the space occupied by Hashtable */
 void freeHashtable(Hashtable *ht){
 	Node *list=NULL;
 	Node *temp=NULL;
@@ -102,6 +152,8 @@ void freeHashtable(Hashtable *ht){
 	free(ht->list);
 	// free(ht);
 }
+
+/* function to insert numbers into Hashtable */
 int insertKeyIntoHashtable(Hashtable *ht,int key){
 	Node *new_list;
 	Node *current_list;
@@ -138,6 +190,8 @@ int insertKeyIntoHashtable(Hashtable *ht,int key){
 	}
 	return 0;
 }
+
+/* driver function */
 int main(){
 	Hashtable *ht = createHashtable();
 	int insertFlag;
@@ -146,24 +200,22 @@ int main(){
 	if(file){
 		while (!feof(file)){
 			fscanf (file, "%d", &i);
-			// printf("%d\n",i);
  			insertFlag = insertKeyIntoHashtable(ht,i);
 			if(insertFlag==1){
 				printf("!!! Error: Can't create memory !!!\n");
 				exit(0);
 			}
 			else if(insertFlag == 2){
-				// printf("element found\n");
+				// printf("element is found\n");
 				continue;
 			}
 			else{
-				// printf("element not found. but added\n");
+				// printf("element is not found. now it's added\n");
 				continue;
 			}
 		}
 	}
 	printHashtable(ht);
-	// printf("%d\n", ht->size);
 	freeHashtable(ht);
 	free(ht);
 	fclose(file);
