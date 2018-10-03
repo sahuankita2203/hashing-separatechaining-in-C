@@ -2,6 +2,7 @@
 /* @disclaimer: I am a newbie in git */
 /* @input: input.txt*/
 /* @output: STD I/O */
+/* @limitations: this implementation will work only with positive integers. */
 /* @description: Problem statement-
 
 		The task is to write a hashtable program in C using arrays and linked
@@ -26,14 +27,12 @@
 		example, the first three lines of your output might look something like
 
 */
-
-/* @observation:
-		with a 8 GB RAM and Ubuntu 18.04, the 10^6 numbers in the range of [0,10^7) were hashable in a hashtable of size 2097152 (# of buckets) efficiently. We can try further for larger and more spread of input numbers
-*/
+/* @observation: with a 8 GB RAM and Ubuntu 18.04, the 10^6 numbers in the range of [0,10^7) were hashable in a hashtable of size 2097152 (# of buckets) efficiently. We can try further for larger and more spread of input numbers */
 /* @terms:
 		Bucket -> List
 		Item -> Number/Node
 */
+
 
 /* import statements */
 #include<stdio.h>
